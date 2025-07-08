@@ -21,3 +21,17 @@ def select(sql, params=None):
         logging.error(f"执行{sql},{params}语句异常")
         logging.error(e)
         return []
+
+
+def update(sql, params=None):
+    try:
+        with connection.cursor() as cursor:
+            rows_affected = cursor.execute(sql, params)
+            connection.commit()
+            logging.info(f"执行{sql},{params}语句，影响行数：{rows_affected}")
+            return rows_affected
+    except Exception as e:
+        connection.rollback()
+        logging.error(f"执行{sql},{params}语句异常")
+        logging.error(e)
+        return 0

@@ -29,7 +29,7 @@ def getParaByCourse():
     data = request.get_json()
     term = data["term"]
     courseId = data["courseId"]
-    sql = "select data from teachingprogramtable where term=%s and courseId=%s"
+    sql = "select data from teachingprogramtable where term=%s and id=%s"
     sqlData = db.select(
         sql,
         (
@@ -37,6 +37,7 @@ def getParaByCourse():
             courseId,
         ),
     )
+    print(sqlData)
     sqlData = eval(sqlData[0]["data"])
     result = []
     for i in range(len(sqlData)):
@@ -63,7 +64,35 @@ def createNewText():
     sqlData = eval(sqlData[0]["data"])
     print(data["index"])
     tpData = sqlData[data["index"]]["subChapter"][data["iindex"]]["content"]
-    createLessonPlan(
+    result = createLessonPlan(
         data["course"], data["para"], data["content"], tpData, data["callWord"]
     )
-    return jsonify({"id": 0})
+    id = data["id"]
+    if id == -1:
+        sql = "insert into lessonplantable (name,userId,teachingProgramId,para,createTime,changeTime,data,chapterNum,subChapterNum)values (%s,%s,%s,%s,NOW(),NOW(),%s,%s,%s)"
+        sqlData = db.update(
+            sql,
+            (
+                data["name"],
+                data["userId"],
+                data["teachingProgramId"],
+                data["para"],
+                result,
+                data["index"],
+                data["iindex"],
+            ),
+        )
+        print(sqlData)
+        sql = "select max(id) as id from lessonplantable"
+        id = db.select(sql)[0]["id"]
+    else:
+        sql = "update lessonplantable set changeTime=NOW() ,data=%s where id=%s"
+        sqlData = db.update(
+            sql,
+            (
+                result,
+                id,
+            ),
+        )
+        print(sqlData)
+    return jsonify({"id": id, "data": result})
