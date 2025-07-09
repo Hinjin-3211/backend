@@ -96,3 +96,15 @@ def createNewText():
         )
         print(sqlData)
     return jsonify({"id": id, "data": result})
+
+
+@lessonPlan.route(host + "/getAllLessonPlan", methods=["post"])
+def getAllLessonPlan():
+    userId = request.get_json()["userId"]
+    sql = "select a.id as id,a.name as name,c.name as course,a.para as para,a.changeTime as time,a.chapterNum,a.subChapterNum from lessonplantable a,teachingprogramtable b,course c where a.userId=%s and a.teachingProgramId=b.id and b.courseId=c.id"
+    result = db.select(sql, (userId,))
+    for i in range(len(result)):
+        result[i][
+            "paraId"
+        ] = f"{result[i]['chapterNum']+1}-{result[i]['subChapterNum']+1}"
+    return jsonify(result)
