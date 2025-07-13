@@ -1,3 +1,14 @@
+def createLessonPrepareDocx(lessonPlan, text, callWord):
+    """
+    lessonPlan:教案内容，string
+    text:备课文档内容，string，可为空字符串
+    callword:用户输入的提示词,string
+
+    返回一个string，代表用户生成的备课文档
+    """
+    return "这是生成的备课文档"
+
+
 def createLessonPlan(course, para, content, data, callWord):
     """
     course:课程名，string
